@@ -1,0 +1,135 @@
+{% extends "index.html" %}
+
+
+{% block content %}
+
+{#    模块选择下拉框，和参数输入框#}
+    <div class="work">
+          <span class="select">
+              <select  id="module" class="btn btn-default">
+                <option value="">请选择模块</option>
+                <option value="service">服务管理</option>
+              </select>
+          </span>
+
+          <span class="select">
+              <select id="hosts" class="btn btn-default"  name="hosts" >
+                    <option value="">请选择主机</option>
+                    <option value="*">所有主机</option>
+              </select>
+          </span>
+
+          <div id="func" style="display: inline-block">
+              <select class="btn btn-default hide"  name="service">
+                  <option value="restart">重启服务</option>
+                  <option value="start">启动服务</option>
+                  <option value="stop">停止服务</option>
+                  <option value="status">查看服务状态</option>
+              </select>
+          </div>
+
+          <span id="args">
+              <input name="service" class="form-control arg_input hide" placeholder="请输入服务名称"/>
+          </span>
+
+          <div style="padding: 10px;display: inline-block">
+              <input id="exec" class="btn btn-default" type="submit" value="执行">
+          </div>
+          <div class="alert alert-danger hint hide" role="alert"></div>
+
+    </div>
+
+{#展示执行后返回的数据table#}
+    <div class="frame">
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+                <th>序号</th>
+                <th>主机名</th>
+                <th>状态</th>
+            </tr>
+          </thead>
+          <tbody id="content" >
+          </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="/static/js/jquery-1.12.4.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <script>
+{#    模块选择，根据选择的模块显示模块的方法#}
+        $("#module").change(function(){
+            var module = $(this).val()
+            $("#func").children().each(function(){
+                if ($(this).attr('name') == module ){
+                    $(this).removeClass('hide')
+                }else{
+                    $(this).addClass('hide')
+                }
+            })
+{#    根据选择的方法，显示需要输入的参数  #}
+            $("#args").children().each(function(){
+                if ($(this).attr('name') == module ){
+                    $(this).removeClass('hide')
+                }else{
+                    $(this).addClass('hide')
+                }
+            })
+
+        })
+
+
+{#    执行按钮的点击事件，获取选择和输入的参数，post到action.html#}
+{#    通过view.action方法执行后返回数据，并处理数据，让其展示到表格#}
+{#    获取参数#}
+        $("#exec").click(function(){
+            var args = new Array()
+            var hosts = $("#hosts").val()
+            var module = $("#module").val()
+            var func = $("select[name='"+module+"']").val()
+            var args_list = $("input[name='"+module+"']")
+            args_list.each(function(i){
+                if ( !!$(this).val() ){
+                    args[args.length] = $(this).val()
+                }
+            })
+            var params = JSON.stringify(args)
+{#            提交参数#}
+            $.ajax({
+                type:'post',
+                url:'action.html',
+                data:{hosts:hosts,
+                    module:module,
+                    func:func,
+                    args:params},
+{#                获取返回数据，并处理#}
+                success:function(status){
+                    var content = $('#content')
+                    var i = 1
+                    if ('return' in status){
+                        data = status['return'][0]
+                        console.log(data)
+                        for ( key in data ){
+                            if (data[key] == true){
+                                var rows = '<tr class="success"><td>'+i+'</td><td>'+key+'</td><td>' +data[key]+'</td></tr>'
+                                content.append(rows)
+                                i++
+                            }else{
+                                var rows = '<tr class="danger"><td>'+i+'</td><td>'+key+'</td><td>' +data[key]+'</td></tr>'
+                                content.append(rows)
+                                i++
+                            }
+                        }
+                    }else{
+                            $('.alert-danger').append(status['except'])
+                            $('.alert-danger').removeClass('hide')
+                    }
+                },
+                dataType:"json"
+            })
+        })
+    </script>
+{% endblock %}
