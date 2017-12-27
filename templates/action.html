@@ -1,5 +1,9 @@
 {% extends "index.html" %}
 
+{% block css %}
+        <link rel="stylesheet" href="/static/css/action.css"/>
+{% endblock %}
+
 
 {% block content %}
 
@@ -9,6 +13,8 @@
               <select  id="module" class="btn btn-default">
                 <option value="">请选择模块</option>
                 <option value="service">服务管理</option>
+                <option value="cmd">Powershell</option>
+                <option value="cp">文件复制</option>
               </select>
           </span>
 
@@ -19,24 +25,36 @@
               </select>
           </span>
 
-          <div id="func" style="display: inline-block">
-              <select class="btn btn-default hide"  name="service">
-                  <option value="restart">重启服务</option>
-                  <option value="start">启动服务</option>
-                  <option value="stop">停止服务</option>
-                  <option value="status">查看服务状态</option>
+          <div style="display: inline-block">
+              <select id="func"  class="btn btn-default" name="func">
+                  <option name="title" value="">请选择方法</option>
+                  <option name="service" value="restart">重启服务</option>
+                  <option name="service" value="start">启动服务</option>
+                  <option name="service" value="stop">停止服务</option>
+                  <option name="service" value="status">查看服务状态</option>
+                  <option name="cmd" value="run">powershell</option>
+                  <option name="cmd" value="script">脚本</option>
+                  <option name="cp" value="get_file">文件分发</option>
               </select>
           </div>
 
           <span id="args">
-              <input name="service" class="form-control arg_input hide" placeholder="请输入服务名称"/>
+              <input name="service.restart" class="form-control arg_input hide" placeholder="请输入需要重启的服务名"/>
+              <input name="service.start" class="form-control arg_input hide" placeholder="请输入需要启动的服务名"/>
+              <input name="service.stop" class="form-control arg_input hide" placeholder="请输入需要停止的服务名"/>
+              <input name="service.status" class="form-control arg_input hide" placeholder="请输入查看状态的服务名"/>
+              <input name="cmd.run" class="form-control arg_input hide" placeholder="请输入powershell命令"/>
+              <input name="cmd.run" class="form-control arg_input hide" value="shell='powershell'"disabled>
+              <input name="cmd.script" class="form-control arg_input hide" value="salt://"/>
+              <input name="cmd.script" class="form-control arg_input hide" value="shell='powershell'"disabled>
+              <input name="cp.get_file" class="form-control arg_input hide" value="salt://"/>
+              <input name="cp.get_file" class="form-control arg_input hide" placeholder="请输入目标文件路径"/>
           </span>
 
           <div style="padding: 10px;display: inline-block">
               <input id="exec" class="btn btn-default" type="submit" value="执行">
           </div>
           <div class="alert alert-danger hint hide" role="alert"></div>
-
     </div>
 
 {#展示执行后返回的数据table#}
@@ -58,28 +76,42 @@
 {% block js %}
     <script src="/static/js/jquery-1.12.4.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
+    <script language="JavaScript" src="/static/js/action.js"></script>
 
     <script>
 {#    模块选择，根据选择的模块显示模块的方法#}
-        $("#module").change(function(){
-            var module = $(this).val()
-            $("#func").children().each(function(){
-                if ($(this).attr('name') == module ){
-                    $(this).removeClass('hide')
-                }else{
-                    $(this).addClass('hide')
-                }
-            })
-{#    根据选择的方法，显示需要输入的参数  #}
-            $("#args").children().each(function(){
-                if ($(this).attr('name') == module ){
-                    $(this).removeClass('hide')
-                }else{
-                    $(this).addClass('hide')
-                }
-            })
-
+    $("#module").change(function(){
+        var module = $(this).val()
+        $("#func").children().each(function(){
+            if ($(this).attr('name') == module ){
+                $(this).removeClass('hide')
+            }else{
+                $(this).addClass('hide')
+            }
         })
+{#    根据选择的方法，显示需要输入的参数  #}
+{#            $("#args").children().each(function(){#}
+{#                if ($(this).attr('name') == module ){#}
+{#                    $(this).removeClass('hide')#}
+{#                }else{#}
+{#                    $(this).addClass('hide')#}
+{#                }#}
+{#            })#}
+{##}
+        })
+    $('#func').change(function(){
+        func = $('#func').val()
+        module = $('#func').find('option:selected').attr('name')
+        mudule_func = module + '.' +func
+        $('#args').children().each(function(){
+            if ( $(this).attr('name') == mudule_func ){
+                $(this).removeClass('hide')
+            }else{
+                $(this).addClass('hide')
+            }
+        })
+    })
+
 
 
 {#    执行按钮的点击事件，获取选择和输入的参数，post到action.html#}
@@ -88,9 +120,11 @@
         $("#exec").click(function(){
             var args = new Array()
             var hosts = $("#hosts").val()
-            var module = $("#module").val()
-            var func = $("select[name='"+module+"']").val()
-            var args_list = $("input[name='"+module+"']")
+            console.log(hosts)
+            func = $('#func').val()
+            module = $('#func').find('option:selected').attr('name')
+            mudule_func = module + '.' +func
+            var args_list = $("input[name='"+mudule_func+"']")
             args_list.each(function(i){
                 if ( !!$(this).val() ){
                     args[args.length] = $(this).val()
@@ -98,35 +132,17 @@
             })
             var params = JSON.stringify(args)
 {#            提交参数#}
+            console.log(params)
+            console.log(mudule_func)
             $.ajax({
                 type:'post',
                 url:'action.html',
                 data:{hosts:hosts,
-                    module:module,
-                    func:func,
+                    module:mudule_func,
                     args:params},
 {#                获取返回数据，并处理#}
-                success:function(status){
-                    var content = $('#content')
-                    var i = 1
-                    if ('return' in status){
-                        data = status['return'][0]
-                        console.log(data)
-                        for ( key in data ){
-                            if (data[key] == true){
-                                var rows = '<tr class="success"><td>'+i+'</td><td>'+key+'</td><td>' +data[key]+'</td></tr>'
-                                content.append(rows)
-                                i++
-                            }else{
-                                var rows = '<tr class="danger"><td>'+i+'</td><td>'+key+'</td><td>' +data[key]+'</td></tr>'
-                                content.append(rows)
-                                i++
-                            }
-                        }
-                    }else{
-                            $('.alert-danger').append(status['except'])
-                            $('.alert-danger').removeClass('hide')
-                    }
+                success:function(data){
+                    data_show(data)
                 },
                 dataType:"json"
             })

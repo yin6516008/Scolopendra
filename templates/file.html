@@ -1,0 +1,131 @@
+{% extends "index.html" %}
+
+{% block css %}
+        <link rel="stylesheet" href="/static/css/file.css"/>
+{% endblock %}
+
+
+{% block content %}
+    <div class="work">
+        <div class="btn_group">
+            <span class="button">
+                <button type="button" class="btn btn-primary button" data-toggle="modal" data-target=".upload_file">上传</button>
+                <div class="modal fade upload_file" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                  <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content upload_relative" >
+                        <form action="/file/" method="POST" enctype="multipart/form-data" target="upload_file">
+{#                            <iframe id="upload_file" name="upload_file" style="display: none"></iframe>#}
+                            <input name="file" class="btn-upload button btn-upload_input" type="file"/>
+                            <button class="btn btn-default btn-upload button" type="button">选择文件</button>
+                            <button name="confirm_upload" class="btn btn-default button confirm_upload" type="button">确定</button>
+                        </form>
+                        <p class="upload_file_name"></p>
+                    </div>
+                  </div>
+                </div>
+            </span>
+            <span class="button">
+                <button class="btn btn-default button" data-toggle="modal" data-target=".new" type="button">新建</button>
+                <div class="modal fade new" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                  <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content new_dir">
+                        <div class="input-group">
+                            <span class="input-group-addon" id="basic-addon1">名称</span>
+                            <input type="text" class="form-control new_dir_input" placeholder="新建文件夹名称" aria-describedby="basic-addon1">
+                        </div>
+                        <input class="btn btn-default confirm_new_dir" type="button" value="确定">
+                        <p class="upload_file_name"></p>
+                    </div>
+                  </div>
+                </div>
+            </span>
+        </div>
+
+        <div>
+            <ol id="relpath" class="breadcrumb">
+                <li><a class="path_dir" onclick="change_path(this)" path_dir="">Home</a></li>
+            </ol>
+            <ul id="file_list" class="list-group file-list">
+                {% for dir in file_list.dir %}
+                    <li class="list-group-item"><input type="checkbox" ><a class="list_dir" onclick="change_dir(this)" dir="{{ dir }}"> {{ dir }}</a></li>
+                {% endfor %}
+                {% for file in file_list.file %}
+                    <li class="list-group-item"><input type="checkbox"  value="{{ file }}"> {{ file }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+{% block js %}
+    <script src="/static/js/jquery-1.12.4.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/file.js"></script>
+    <script>
+    //进入文件夹
+        function change_dir(current_click){
+            var relpath_list = new Array()
+            $('#relpath').find('a').each(function(i){
+                var path_dir = $(this).attr('path_dir')
+                relpath_list[i] = path_dir
+            })
+            var dir_name = current_click.getAttribute('dir')
+            relpath_list.push(dir_name)
+            $.post('file.html',{'change_dir':JSON.stringify(relpath_list)},function(msg){
+                var data = JSON.parse(msg)
+                $('#relpath').find("li[name='sub']").remove()
+                $('#file_list').empty()
+                data_show(data)
+            })
+        }
+
+    //切换路径
+        function change_path(current_click){
+            var path_list = new Array()
+            var $current_click = $(current_click)
+            var list = $current_click.parent().prevAll()
+            list.each(function(i){
+                path_list[i] = $(this).children().attr('path_dir')
+            })
+            path_list.push($current_click.attr('path_dir'))
+            $.post('/file/',{'change_dir':JSON.stringify(path_list)},function(msg){
+                var data = JSON.parse(msg)
+                $('#relpath').find("li[name='sub']").remove()
+                $('#file_list').empty()
+                data_show(data)
+            })
+        }
+
+
+
+    //显示要上传的文件名
+        $("input[name='file']").change(function(){
+            var name = $(this).val()
+            $('.upload_file_name').text(name.split('\\').pop())
+        })
+
+    //上传文件函数
+        $('.confirm_upload').click(function() {
+            var file_obj = $('.btn-upload_input').get(0).files[0]
+            var file_path = new Array()
+            $('#relpath').find('a').each(function (i) {
+                file_path[i] = $(this).attr('path_dir')
+            })
+            var return_location = $('.upload_file_name')
+            upload_file(file_path,file_obj,return_location)
+        })
+
+    //新建文件夹
+    $('.confirm_new_dir').click(function(){
+        var file_path = []
+        $('#relpath').find('a').each(function (i) {
+            file_path[i] = $(this).attr('path_dir')
+        })
+        var new_dir_name = $('.new_dir_input').val()
+        var return_location = $('.upload_file_name')
+        new_dir_func(file_path,new_dir_name,return_location)
+    })
+    </script>
+{% endblock %}

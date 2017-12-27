@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^$', views.login),
     url(r'^login/', views.login),
     url(r'^action/', views.action),
+    url(r'^file/', views.file),
 ]

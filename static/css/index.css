@@ -1,12 +1,14 @@
 .head{
     margin: 0 auto;
+    width: 100%;
 }
 
 .head .logo{
-    padding: 15px 360px 0px 15px;
+    padding: 15px 15% 0px 15px;
     font-size: 26px;
 }
 
 .head .menu{
-    width: 230px;
+    width: 15%;
+    border: none;
 }
