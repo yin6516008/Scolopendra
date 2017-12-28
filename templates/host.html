@@ -1,0 +1,130 @@
+{% extends "index.html" %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/host.css"/>
+{% endblock %}
+
+{% block content %}
+    <div id="host_list" class="host_list">
+
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#minions" aria-controls="minions" role="tab" data-toggle="tab">已认证</a></li>
+        <li role="presentation"><a href="#minions_denied" aria-controls="minions_denied" role="tab" data-toggle="tab">异常的</a></li>
+        <li role="presentation"><a href="#minions_pre" aria-controls="minions_pre" role="tab" data-toggle="tab">等待认证</a></li>
+        <li role="presentation"><a href="#minions_rejected" aria-controls="minions_rejected" role="tab" data-toggle="tab">被拒绝</a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active host_table" id="minions">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>主机名</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for host in host_list.minions %}
+                    <tr name="{{ host }}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ host }}</td>
+                        <td><a class="host_table_action" action="del" hostname="{{ host }}">删除</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="minions_denied">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>主机名</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for host in host_list.minions_denied %}
+                    <tr name="{{ host }}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ host }}</td>
+                        <td><a class="host_table_action" action="del" hostname="{{ host }}">删除</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="minions_pre">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>主机名</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for host in host_list.minions_pre %}
+                    <tr name="{{ host }}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ host }}</td>
+                        <td>
+                            <a class="host_table_action" action="accept" hostname="{{ host }}">加入</a>
+                            <a class="host_table_action" action="del" hostname="{{ host }}">删除</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="minions_rejected">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>主机名</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for host in host_list.minions_rejected %}
+                    <tr name="{{ host }}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ host }}</td>
+                        <td><a class="host_table_action" action="del" hostname="{{ host }}">删除</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="/static/js/jquery-1.12.4.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script>
+        $('.host_table_action').click(function(){
+            var hostname = $(this).attr('hostname')
+            var action = $(this).attr('action')
+            $.ajax({
+                url:'host.html',
+                type:'POST',
+                data:{
+                    'action':action,
+                    'hostname':hostname
+                },
+                success:function(msg){
+                    if ( msg == 'OK'){
+                        $("tr[name='"+hostname+"']").remove()
+                    }
+                }
+            })
+        })
+    </script>
+{% endblock %}

@@ -32,9 +32,10 @@
         <div class="navbar-header head">
             <a class="navbar-brand logo" href="/action">Scolopandra</a>
             <a class="navbar-brand menu" href="/action">命令操作</a>
-            <a class="navbar-brand menu" href="/index">主机管理</a>
-            <a class="navbar-brand menu" href="/index">组管理</a>
+            <a class="navbar-brand menu" href="/host">主机管理</a>
+            <a class="navbar-brand menu" href="/group">组管理</a>
             <a class="navbar-brand menu" href="/file">文件管理</a>
+            <a class="navbar-brand menu" href="/log">日志信息</a>
 
         </div>
       </div>
@@ -46,7 +47,8 @@
     {% endblock %}
 
 {#    js部分    #}
-
+    <script src="/static/js/jquery-1.12.4.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
     {% block js %}
     {% endblock %}
 </body>

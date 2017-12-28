@@ -6,10 +6,10 @@ import json
 import re
 from django.shortcuts import render,HttpResponse,redirect,render_to_response
 from Classes import api
-from Classes.fileMnage import file_gl
+from Classes.fileManage import file_gl
 from Classes.General import correct_Data,join_path
+from Classes.hostManage import host_gl
 
-Ascii_Re = re.compile('\\.{3}')
 def login(request):
     '''
     登陆函数
@@ -64,10 +64,29 @@ def action(request):
             data = correct_Data(res)
             return HttpResponse(json.dumps(data),content_type='application/json')
 
-def upload(request):
-    file_obj = request.FILES.get('upload_file')
-    status = api.save_file_to_salt_root(file_obj)
-    return HttpResponse(status)
+
+def host(request):
+    host_gl_obj = host_gl()
+    if request.method == 'GET':
+        host_list = host_gl_obj.show_host()
+        print(host_list)
+        return render(request,'host.html',{'host_list':host_list})
+    elif request.method == 'POST':
+        action_host = request.POST.get('action')
+        print(action_host)
+        hostname = request.POST.get('hostname')
+        if action_host == 'del':
+            result = host_gl_obj.detele_host(hostname)
+            print(result)
+            return HttpResponse(result)
+        if action_host == 'accept':
+            result = host_gl_obj.accept_host(hostname)
+            return HttpResponse(result)
+
+
+def group(request):
+    return render(request,'group.html')
+
 
 def file(request):
     if request.method == 'GET':
@@ -94,3 +113,7 @@ def file(request):
             file_gl_obj = file_gl(relpath=relpath)
             result = file_gl_obj.new_dir()
             return HttpResponse(result)
+
+
+def log(request):
+    return render(request,'log.html')
