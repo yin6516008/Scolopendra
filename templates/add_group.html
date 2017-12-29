@@ -1,0 +1,59 @@
+{% extends "index.html" %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/group.css">
+{% endblock %}
+
+{% block content %}
+    <div class="add_group_list">
+        <div class="add_group_info">
+            <span class="input-group add_group_name">
+              <span class="input-group-addon" id="basic-addon1">新组名</span>
+              <input type="text" class="form-control" placeholder="新建组的名字" aria-describedby="basic-addon1">
+            </span>
+            <span class="input-group add_group_description">
+              <span class="input-group-addon" id="basic-addon1">描述</span>
+              <input type="text" class="form-control" placeholder="组描述内容" aria-describedby="basic-addon1">
+            </span>
+            <button class="btn btn-default confirm_add_group" type="button">新建</button>
+        </div>
+        <div >
+            <table class="table table-condensed add_group_table">
+                {% for host in host_list.minions %}
+                  <tr>
+                      <td><input type="checkbox" value="{{ host }}"> {{ host }}</td>
+                  </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+    $('.confirm_add_group').click(function(){
+        var add_group_name = $('.add_group_name').children('input').val()
+        var add_group_description = $('.add_group_description').children('input').val()
+        var add_group_table = []
+        $('.add_group_table').find('input:checked').each(function(i){
+            add_group_table[i] = $(this).val()
+        })
+        $.ajax({
+            url:'add_group.html',
+            type:'POST',
+            data:{
+                action:'add_group',
+                group_name:add_group_name,
+                group_table:JSON.stringify(add_group_table),
+                group_description:add_group_description,
+            },
+            success:function(msg){
+                if ( msg == 'OK'){
+                    window.history.back(-1)
+                }
+            }
+
+        })
+    })
+    </script>
+{% endblock %}

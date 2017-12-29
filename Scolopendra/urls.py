@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^action/', views.action),
     url(r'^file/', views.file),
     url(r'^group/', views.group),
+    url(r'^add_group/', views.add_group),
     url(r'^host/', views.host),
     url(r'^log/', views.log),
 

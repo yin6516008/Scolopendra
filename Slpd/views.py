@@ -9,6 +9,7 @@ from Classes import api
 from Classes.fileManage import file_gl
 from Classes.General import correct_Data,join_path
 from Classes.hostManage import host_gl
+from Classes.groupManage import group_gl
 
 def login(request):
     '''
@@ -37,15 +38,22 @@ def action(request):
     :param request:
     :return:
     '''
+    group_gl_obj = group_gl()
     if request.method == 'GET':
         #验证用户是否已经登陆，检查用户session
         if request.session.get('user',False):
-            return render(request,'action.html')
+            all_group = group_gl_obj.show_all_group()
+            return render(request,'action.html',{'all_group':all_group})
         else:
             return redirect('/login/')
 
     if request.method == 'POST':
-        hosts = request.POST.get('hosts')
+        group_name = request.POST.get('hosts')
+        print(group_name)
+        if group_name == '*':
+            hosts = group_name
+        else:
+            hosts = group_gl_obj.show_hosts(group_name)
         print(1,hosts)
         #接收模块
         mudule_func = request.POST.get('module')
@@ -85,7 +93,39 @@ def host(request):
 
 
 def group(request):
-    return render(request,'group.html')
+    group_gl_obj = group_gl()
+    if request.method == 'GET':
+        all_group = group_gl_obj.show_all_group()
+        return render(request,'group.html',{'all_group':all_group})
+    elif request.method == 'POST':
+        group_name = request.POST.get('del_group')
+        result = group_gl_obj.del_group(group_name)
+        return HttpResponse(result)
+
+def add_group(request):
+    host_gl_obj = host_gl()
+    if request.method == 'GET':
+        host_list = host_gl_obj.show_host()
+        print(host_list)
+        return render(request,'add_group.html',{'host_list':host_list})
+    elif request.method == 'POST':
+        action = request.POST.get('action')
+        group_name = request.POST.get('group_name')
+        group_hosts_str = request.POST.get('group_table')
+        group_hosts = eval(group_hosts_str)
+        group_description = request.POST.get('group_description')
+        group_hosts_number = len(group_hosts)
+        print(action,group_name,group_hosts,group_description)
+        group = {
+            'group_name':group_name,
+            'group_hosts':group_hosts,
+            'group_description':group_description,
+            'group_hosts_number':group_hosts_number
+        }
+        group_gl_obj = group_gl()
+        group_gl_obj.add_group(group)
+
+        return HttpResponse('OK')
 
 
 def file(request):

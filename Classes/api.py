@@ -17,6 +17,9 @@ salt_root_path = master_opts['file_roots']['base'][0]
 salt_api = salt.client.LocalClient()
 def cmd(hosts,mudules,args):
     print(6,hosts,mudules,args)
-    data = salt_api.cmd(hosts,mudules,args)
+    if type(hosts) ==  list :
+        data = salt_api.cmd(hosts, mudules, args,expr_form='list')
+    else:
+        data = salt_api.cmd(hosts,mudules,args)
     return data
 

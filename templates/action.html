@@ -22,6 +22,9 @@
               <select id="hosts" class="btn btn-default"  name="hosts" >
                     <option value="">请选择主机</option>
                     <option value="*">所有主机</option>
+                    {% for group in all_group %}
+                    <option value="{{ group.group_name }}">{{ group.group_name }}</option>
+                    {% endfor %}
               </select>
           </span>
 
