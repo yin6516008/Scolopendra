@@ -1,3 +1,9 @@
+/*通用*/
+.hide{
+    display: none;
+}
+
+/*index*/
 .head{
     margin: 0 auto;
     width: 100%;
@@ -11,4 +17,178 @@
 .head .menu{
     width: 15%;
     border: none;
+}
+
+
+/*action*/
+.action-work{
+    margin: 0 auto;
+    text-align: center;
+    width: 70%;
+    padding: 15px 0px 20px 0px;
+}
+
+.action-work .action-select{
+    padding: 0px 10px;
+}
+
+
+.action-frame{
+    width: 60%;
+    height:100%;
+    margin: 0 auto;
+}
+
+.action-arg_input{
+    width: 200px;
+    display: inline-block;
+}
+
+.action-hint{
+    padding: 5px;
+    display: inline-block;
+    line-height: 20px;
+    height: 35px;
+}
+
+/*host*/
+.host-list{
+    margin: 0 auto;
+    width: 60%;
+}
+
+.host-table{
+    margin-top: 20px;
+}
+
+.host-table_action{
+    cursor:pointer;
+}
+
+/*group*/
+.group-list{
+    margin: 0 auto;
+    width: 60%;
+}
+
+.group-action_del{
+    cursor:pointer;
+}
+
+.group-action_edit{
+    cursor:pointer;
+}
+
+/*add-group*/
+.add_group-list{
+    margin: 0 auto;
+    width: 60%;
+}
+.add_group-info{
+    margin: 0 auto;
+    padding: 10px 10px 30px 0;
+}
+
+
+.add_group-name{
+    width: 200px;
+    float: left;
+    padding-right: 20px ;
+}
+.add_group-description{
+    width: 400px;
+    float: left;
+    padding-right: 20px ;
+}
+
+.add_group-confirm{
+
+}
+
+.add_group-table{
+
+}
+
+/*file*/
+.file-work{
+    margin: 0 auto;
+    width: 60%;
+}
+
+.file-work .file-list{
+    font-size: 18px;
+}
+
+.file-work .file-list .file-list_dir{
+    cursor:pointer;
+}
+
+.file-work .breadcrumb .file-path_dir{
+    cursor:pointer;
+    font-size: 18px;
+}
+
+.file-btn_group {
+    width:1000px;
+    height:45px;
+    display:inline-block;
+    margin-bottom:20px;
+}
+.file-button{
+    width: 80px;
+    height: 45px;
+}
+
+.file-btn_upload {
+    z-index: 10;
+    position:absolute;
+    left: 20px;
+    top: 20px;
+}
+
+.file-btn_upload_input{
+    display:inline-block;
+    z-index:11;
+    opacity: 0;
+}
+
+.file-upload_relative{
+    position:relative;
+    height: 150px
+}
+
+.file-confirm_upload{
+    position:absolute;
+    left: 200px;
+    top: 20px;
+}
+
+.file-upload_file_name{
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    font-size: 16px;
+}
+
+.file-new_dir{
+    height: 100px;
+    padding: 10px 15px 0px 15px;
+}
+
+.file-confirm_new_dir{
+    margin: 10px 100px;
+}
+
+.file-del_file{
+    cursor:pointer;
+    float: right;
+}
+
+/*status*/
+.show_status{
+    margin: 0 auto;
+    text-align: center;
+    font-size: 24px;
+    height: 50px;
+    width: 300px;
 }

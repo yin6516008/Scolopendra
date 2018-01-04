@@ -13,7 +13,7 @@ class file_gl(object):
         self.__root_relpath = relpath
         self.__show_file = {'dir':[],'file':[],'relpath':self.__root_relpath.split('/')}
 
-    def show(self):
+    def show_file(self):
         '''
         文件展示，返回用户点击的文件夹下的数据
         '''
@@ -28,14 +28,19 @@ class file_gl(object):
 
     def new_dir(self):
         if os.path.exists(self.__root_abspath):
-            return 'exists'
+            return 'Folder Exists'
         else:
             os.mkdir(self.__root_abspath)
             return 'OK'
 
+    def del_file(self):
+        if os.path.exists(self.__root_abspath):
+            os.remove(self.__root_abspath)
+            return 'OK'
+        else:
+            return 'is not exists'
 
-
-    def save_file_to_salt_root(self,file):
+    def upload_file(self,file):
         '''
         保存用户上传的文件到用户当前所在的目录
         '''
@@ -48,6 +53,6 @@ class file_gl(object):
                     f.close()
                 return 'OK'
             else:
-                return 'exists'
+                return 'File Exists'
         except Exception:
-            return 'failed'
+            return 'Failed'

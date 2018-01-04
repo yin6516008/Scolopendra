@@ -74,10 +74,14 @@ def action(request):
 
 
 def host(request):
+    '''
+    主机管理页的方法
+    :param request:
+    :return:
+    '''
     host_gl_obj = host_gl()
     if request.method == 'GET':
         host_list = host_gl_obj.show_host()
-        print(host_list)
         return render(request,'host.html',{'host_list':host_list})
     elif request.method == 'POST':
         action_host = request.POST.get('action')
@@ -93,6 +97,11 @@ def host(request):
 
 
 def group(request):
+    '''
+    组管理页的方法
+    :param request:
+    :return:
+    '''
     group_gl_obj = group_gl()
     if request.method == 'GET':
         all_group = group_gl_obj.show_all_group()
@@ -103,10 +112,14 @@ def group(request):
         return HttpResponse(result)
 
 def add_group(request):
+    '''
+    新建组的方法
+    :param request:
+    :return:
+    '''
     host_gl_obj = host_gl()
     if request.method == 'GET':
         host_list = host_gl_obj.show_host()
-        print(host_list)
         return render(request,'add_group.html',{'host_list':host_list})
     elif request.method == 'POST':
         action = request.POST.get('action')
@@ -123,36 +136,47 @@ def add_group(request):
             'group_hosts_number':group_hosts_number
         }
         group_gl_obj = group_gl()
-        group_gl_obj.add_group(group)
+        status = group_gl_obj.add_group(group)
 
-        return HttpResponse('OK')
+        return HttpResponse(status)
 
 
 def file(request):
+    '''
+    文件管理的主方法
+    :param request:
+    :return:
+    '''
     if request.method == 'GET':
         file_gl_obj = file_gl()
-        file_list = file_gl_obj.show()
+        file_list = file_gl_obj.show_file()
         return render(request,'file.html',{'file_list':file_list})
     elif request.method == 'POST':
-        if request.POST.get('change_dir'):
-            relpath_list = request.POST.get('change_dir')
-            relpath = join_path(eval(relpath_list))
+        if request.POST.get('action'):
+            action = request.POST.get('action')
+            print(action)
+            path_str = request.POST.get('path')
+            relpath = join_path(eval(path_str))
+            print(relpath)
             file_gl_obj = file_gl(relpath=relpath)
-            file_list = file_gl_obj.show()
-            return HttpResponse(json.dumps(file_list))
+            if hasattr(file_gl_obj,action):
+                func = getattr(file_gl_obj,action)
+                result = func()
+                print(result)
+                if type(result) == str :
+                    return HttpResponse(json.dumps({'status':result}))
+                elif type(result) == dict:
+                    return HttpResponse(json.dumps({'data':result}))
         elif request.FILES.get('file_obj'):
             file = request.FILES.get('file_obj')
             relpath_list = request.POST.get('relpath')
             relpath = join_path(eval(relpath_list))
             file_gl_obj = file_gl(relpath=relpath)
-            result = file_gl_obj.save_file_to_salt_root(file)
-            return HttpResponse(result)
-        elif request.POST.get('new_dir_data'):
-            new_dir_str = request.POST.get('new_dir_data')
-            relpath = join_path(eval(new_dir_str))
-            file_gl_obj = file_gl(relpath=relpath)
-            result = file_gl_obj.new_dir()
-            return HttpResponse(result)
+            result = file_gl_obj.upload_file(file)
+            print(result)
+            return HttpResponse(json.dumps({'status':result}))
+        else:
+            return HttpResponse('fff')
 
 
 def log(request):

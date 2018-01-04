@@ -1,12 +1,11 @@
 {% extends "index.html" %}
 
 {% block css %}
-    <link rel="stylesheet" href="/static/css/group.css">
 {% endblock %}
 
 {% block content %}
 
-    <div class="group_list">
+    <div class="group-list">
     <a class="btn btn-default" href="/add_group" role="button">新建组</a>
         <table class="table">
           <thead>
@@ -26,8 +25,8 @@
                     <td>{{ group.group_hosts_number }}</td>
                     <td>{{ group.group_description }}</td>
                     <td>
-                        <a class="group_action_edit" group_name="{{ group.group_name }}" >编辑</a>
-                        <a class="group_action_del"  group_name="{{ group.group_name }}" >删除</a>
+                        <a class="group-action_edit" group_name="{{ group.group_name }}" >编辑</a>
+                        <a class="group-action_del"  group_name="{{ group.group_name }}" >删除</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -38,7 +37,7 @@
 
 {% block js %}
     <script>
-    $('.group_action_del').click(function(){
+    $('.group-action_del').click(function(){
         var group_name = $(this).attr('group_name')
         console.log(group_name)
         $.ajax({

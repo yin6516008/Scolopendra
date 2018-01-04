@@ -1,15 +1,14 @@
 {% extends "index.html" %}
 
 {% block css %}
-        <link rel="stylesheet" href="/static/css/action.css"/>
 {% endblock %}
 
 
 {% block content %}
 
 {#    模块选择下拉框，和参数输入框#}
-    <div class="work">
-          <span class="select">
+    <div class="action-work">
+          <span class="action-select">
               <select  id="module" class="btn btn-default">
                 <option value="">请选择模块</option>
                 <option value="service">服务管理</option>
@@ -18,7 +17,7 @@
               </select>
           </span>
 
-          <span class="select">
+          <span class="action-select">
               <select id="hosts" class="btn btn-default"  name="hosts" >
                     <option value="">请选择主机</option>
                     <option value="*">所有主机</option>
@@ -42,26 +41,26 @@
           </div>
 
           <span id="args">
-              <input name="service.restart" class="form-control arg_input hide" placeholder="请输入需要重启的服务名"/>
-              <input name="service.start" class="form-control arg_input hide" placeholder="请输入需要启动的服务名"/>
-              <input name="service.stop" class="form-control arg_input hide" placeholder="请输入需要停止的服务名"/>
-              <input name="service.status" class="form-control arg_input hide" placeholder="请输入查看状态的服务名"/>
-              <input name="cmd.run" class="form-control arg_input hide" placeholder="请输入powershell命令"/>
-              <input name="cmd.run" class="form-control arg_input hide" value="shell='powershell'"disabled>
-              <input name="cmd.script" class="form-control arg_input hide" value="salt://"/>
-              <input name="cmd.script" class="form-control arg_input hide" value="shell='powershell'"disabled>
-              <input name="cp.get_file" class="form-control arg_input hide" value="salt://"/>
-              <input name="cp.get_file" class="form-control arg_input hide" placeholder="请输入目标文件路径"/>
+              <input name="service.restart" class="form-control action-arg_input hide" placeholder="请输入需要重启的服务名"/>
+              <input name="service.start" class="form-control action-arg_input hide" placeholder="请输入需要启动的服务名"/>
+              <input name="service.stop" class="form-control action-arg_input hide" placeholder="请输入需要停止的服务名"/>
+              <input name="service.status" class="form-control action-arg_input hide" placeholder="请输入查看状态的服务名"/>
+              <input name="cmd.run" class="form-control action-arg_input hide" placeholder="请输入powershell命令"/>
+              <input name="cmd.run" class="form-control action-arg_input hide" value="shell='powershell'"disabled>
+              <input name="cmd.script" class="form-control action-arg_input hide" value="salt://"/>
+              <input name="cmd.script" class="form-control action-arg_input hide" value="shell='powershell'"disabled>
+              <input name="cp.get_file" class="form-control action-arg_input hide" value="salt://"/>
+              <input name="cp.get_file" class="form-control action-arg_input hide" placeholder="请输入目标文件路径"/>
           </span>
 
           <div style="padding: 10px;display: inline-block">
               <input id="exec" class="btn btn-default" type="submit" value="执行">
           </div>
-          <div class="alert alert-danger hint hide" role="alert"></div>
+          <div class="alert alert-danger action-hint hide" role="alert"></div>
     </div>
 
 {#展示执行后返回的数据table#}
-    <div class="frame">
+    <div class="action-frame">
         <table class="table table-condensed">
           <thead>
             <tr>
@@ -77,10 +76,34 @@
 {% endblock %}
 
 {% block js %}
-    <script language="JavaScript" src="/static/js/action.js"></script>
-
     <script>
-{#    模块选择，根据选择的模块显示模块的方法#}
+//-----------------------------------------------------------------模块---------------------------------------------
+
+//展示执行结果模块
+    function show_exec_data(data){
+        var content = $('#content')
+        content.empty()
+        var i = 1
+        for ( var host in data ){
+            if (data[host] == true){
+                var rows = '<tr class="success"><td>'+i+'</td><td>'+host+'</td><td>' +data[host]+'</td></tr>'
+                content.append(rows)
+                i++
+            }else if (data[host] == false){
+                var rows = '<tr class="danger"><td>'+i+'</td><td>'+host+'</td><td>' +data[host]+'</td></tr>'
+                content.append(rows)
+                i++
+            }else{
+                var rows = '<tr class="success"><td>'+i+'</td><td>'+host+'</td><td>' +data[host]+'</td></tr>'
+                content.append(rows)
+                i++
+            }
+        }
+    }
+
+
+
+//模块选择，根据选择的模块显示模块的方法
     $("#module").change(function(){
         var module = $(this).val()
         $("#func").children().each(function(){
@@ -90,16 +113,9 @@
                 $(this).addClass('hide')
             }
         })
-{#    根据选择的方法，显示需要输入的参数  #}
-{#            $("#args").children().each(function(){#}
-{#                if ($(this).attr('name') == module ){#}
-{#                    $(this).removeClass('hide')#}
-{#                }else{#}
-{#                    $(this).addClass('hide')#}
-{#                }#}
-{#            })#}
-{##}
-        })
+    })
+
+
     $('#func').change(function(){
         func = $('#func').val()
         module = $('#func').find('option:selected').attr('name')
@@ -114,10 +130,10 @@
     })
 
 
-
-{#    执行按钮的点击事件，获取选择和输入的参数，post到action.html#}
-{#    通过view.action方法执行后返回数据，并处理数据，让其展示到表格#}
-{#    获取参数#}
+//-------------------------------------------------------------------事件-------------------------------------------
+//执行按钮的点击事件，获取选择和输入的参数，post到action.html
+//通过view.action方法执行后返回数据，并处理数据，让其展示到表格
+//获取参数
         $("#exec").click(function(){
             var args = new Array()
             var hosts = $("#hosts").val()
@@ -132,7 +148,7 @@
                 }
             })
             var params = JSON.stringify(args)
-{#            提交参数#}
+//提交参数
             console.log(params)
             console.log(mudule_func)
             $.ajax({
@@ -141,9 +157,9 @@
                 data:{hosts:hosts,
                     module:mudule_func,
                     args:params},
-{#                获取返回数据，并处理#}
+//获取返回数据，并处理
                 success:function(data){
-                    data_show(data)
+                    show_exec_data(data)
                 },
                 dataType:"json"
             })

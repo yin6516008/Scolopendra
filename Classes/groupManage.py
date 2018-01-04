@@ -14,8 +14,16 @@ class group_gl(object):
         self.__group_collection = Scolopendra_db.group
 
     def add_group(self,group):
-        self.__group_collection.insert_one(group)
-        return 'OK'
+        group_name = group['group_name']
+        group_obj = self.__group_collection.find({'group_name':group_name}).count()
+        print(group_obj)
+        print(type(group_obj))
+        if group_obj != 0:
+            return 'Group Exist'
+        else:
+            self.__group_collection.insert_one(group)
+            return 'OK'
+
 
     def show_all_group(self):
         all_group = []

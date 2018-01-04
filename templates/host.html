@@ -1,11 +1,10 @@
 {% extends "index.html" %}
 
 {% block css %}
-    <link rel="stylesheet" href="/static/css/host.css"/>
 {% endblock %}
 
 {% block content %}
-    <div id="host_list" class="host_list">
+    <div id="host_list" class="host-list">
 
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
@@ -17,25 +16,40 @@
 
       <!-- Tab panes -->
       <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active host_table" id="minions">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>序号</th>
-                        <th>主机名</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for host in host_list.minions %}
-                    <tr name="{{ host }}">
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ host }}</td>
-                        <td><a class="host_table_action" action="del" hostname="{{ host }}">删除</a></td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div role="tabpanel" class="tab-pane active host-table" id="minions">
+
+         <ul class="nav nav-tabs" role="tablist">
+            {% for sort_host in host_list.sort_host %}
+            <li role="presentation"><a href="#{{ sort_host }}" aria-controls="{{ sort_host }}" role="tab" data-toggle="tab">{{ sort_host }}</a></li>
+            {% endfor %}
+         </ul>
+          <!-- Tab panes -->
+         <div class="tab-content">
+            {% for sort_host,hosts in host_list.sort_host.items %}
+            <div role="tabpanel" class="tab-pane " id="{{ sort_host }}">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>主机名</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for host in hosts %}
+                        <tr name="{{ host }}">
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ host }}</td>
+                            <td><a class="host-table_action" action="del" hostname="{{ host }}">删除</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+         </div>
+
+
         </div>
         <div role="tabpanel" class="tab-pane" id="minions_denied">
             <table class="table table-striped">
@@ -51,7 +65,7 @@
                     <tr name="{{ host }}">
                         <td>{{ forloop.counter }}</td>
                         <td>{{ host }}</td>
-                        <td><a class="host_table_action" action="del" hostname="{{ host }}">删除</a></td>
+                        <td><a class="host-table_action" action="del" hostname="{{ host }}">删除</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -73,8 +87,8 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ host }}</td>
                         <td>
-                            <a class="host_table_action" action="accept" hostname="{{ host }}">加入</a>
-                            <a class="host_table_action" action="del" hostname="{{ host }}">删除</a>
+                            <a class="host-table_action" action="accept" hostname="{{ host }}">加入</a>
+                            <a class="host-table_action" action="del" hostname="{{ host }}">删除</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -95,7 +109,7 @@
                     <tr name="{{ host }}">
                         <td>{{ forloop.counter }}</td>
                         <td>{{ host }}</td>
-                        <td><a class="host_table_action" action="del" hostname="{{ host }}">删除</a></td>
+                        <td><a class="host-table_action" action="del" hostname="{{ host }}">删除</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -107,7 +121,7 @@
 
 {% block js %}
     <script>
-        $('.host_table_action').click(function(){
+        $('.host-table_action').click(function(){
             var hostname = $(this).attr('hostname')
             var action = $(this).attr('action')
             $.ajax({

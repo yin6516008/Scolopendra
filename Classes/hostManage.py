@@ -9,6 +9,15 @@ class host_gl(object):
 
     def show_host(self,):
         host_list = self.__key.list_keys()
+        sort_host = {}
+        for host in host_list['minions']:
+            sort = host.split('-')[0]
+            if sort in sort_host:
+                sort_host[sort].append(host)
+            else:
+                sort_host[sort] = []
+                sort_host[sort].append(host)
+        host_list['sort_host'] = sort_host
         return host_list
 
     def accept_host(self,hosts):
