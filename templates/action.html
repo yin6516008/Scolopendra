@@ -138,9 +138,9 @@
             var args = new Array()
             var hosts = $("#hosts").val()
             console.log(hosts)
-            func = $('#func').val()
-            module = $('#func').find('option:selected').attr('name')
-            mudule_func = module + '.' +func
+            var func = $('#func').val()
+            var module = $('#func').find('option:selected').attr('name')
+            var mudule_func = module + '.' +func
             var args_list = $("input[name='"+mudule_func+"']")
             args_list.each(function(i){
                 if ( !!$(this).val() ){
@@ -153,7 +153,7 @@
             console.log(mudule_func)
             $.ajax({
                 type:'post',
-                url:'action.html',
+                url:'/action/',
                 data:{hosts:hosts,
                     module:mudule_func,
                     args:params},

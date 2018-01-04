@@ -5,7 +5,7 @@ import os
 import json
 import re
 from django.shortcuts import render,HttpResponse,redirect,render_to_response
-from Classes import api
+from Classes.api import salt_api
 from Classes.fileManage import file_gl
 from Classes.General import correct_Data,join_path
 from Classes.hostManage import host_gl
@@ -46,7 +46,6 @@ def action(request):
             return render(request,'action.html',{'all_group':all_group})
         else:
             return redirect('/login/')
-
     if request.method == 'POST':
         group_name = request.POST.get('hosts')
         print(group_name)
@@ -63,7 +62,8 @@ def action(request):
         args = json.loads(args)
         print(4,args)
         #调用api
-        res = api.cmd(hosts,mudule_func,args)
+        salt_api_obj = salt_api()
+        res = salt_api_obj.cmd(hosts,mudule_func,args)
         print(7,res)
         data = correct_Data(res)
         try:
