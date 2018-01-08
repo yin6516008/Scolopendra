@@ -10,6 +10,12 @@ from Classes.fileManage import file_gl
 from Classes.General import correct_Data,join_path
 from Classes.hostManage import host_gl
 from Classes.groupManage import group_gl
+from Classes.userManage import user_gl
+from Classes.Base_module import Base_Class
+
+
+
+
 
 def login(request):
     '''
@@ -18,18 +24,20 @@ def login(request):
     :return:
     '''
     if request.method == 'GET':
+        print(request.META['REMOTE_ADDR'])
         return render(request,'login.html')
     elif request.method == 'POST':
         #获取用户提交的用户名和密码
         user = request.POST.get('user')
         password = request.POST.get('password')
         #用户名密码验证，并session赋值
-        if user == 'root' and password == 'kemingjunde':
-            print(user,password)
+        user_gl_obj = user_gl()
+        result = user_gl_obj.user_auth(user,password,request)
+        if result:
             request.session['user'] = user
-            return render(request,'action.html')
+            return redirect('/action/')
         else:
-            return HttpResponse('111')
+            return render(request,"login.html",{'login_error':"用户名或密码错误！"})
 
 
 def action(request):
@@ -48,28 +56,19 @@ def action(request):
             return redirect('/login/')
     if request.method == 'POST':
         group_name = request.POST.get('hosts')
-        print(group_name)
-        if group_name == '*':
-            hosts = group_name
-        else:
-            hosts = group_gl_obj.show_hosts(group_name)
-        print(1,hosts)
         #接收模块
         mudule_func = request.POST.get('module')
-        print(2,mudule_func)
         #接收参数列表
         args = request.POST.get('args')
         args = json.loads(args)
-        print(4,args)
         #调用api
         salt_api_obj = salt_api()
-        res = salt_api_obj.cmd(hosts,mudule_func,args)
-        print(7,res)
+        res = salt_api_obj.cmd(group_name,mudule_func,args)
         data = correct_Data(res)
         try:
             return HttpResponse(json.dumps(data),content_type='application/json')
         except UnicodeDecodeError:
-            data = correct_Data(res)
+            # data = correct_Data(res)
             return HttpResponse(json.dumps(data),content_type='application/json')
 
 
@@ -89,7 +88,6 @@ def host(request):
         hostname = request.POST.get('hostname')
         if action_host == 'del':
             result = host_gl_obj.detele_host(hostname)
-            print(result)
             return HttpResponse(result)
         if action_host == 'accept':
             result = host_gl_obj.accept_host(hostname)
@@ -109,6 +107,7 @@ def group(request):
     elif request.method == 'POST':
         group_name = request.POST.get('del_group')
         result = group_gl_obj.del_group(group_name)
+        # log.log_write(log_content="删除组%s" % group_name,type='gourp')
         return HttpResponse(result)
 
 def add_group(request):
@@ -137,7 +136,6 @@ def add_group(request):
         }
         group_gl_obj = group_gl()
         status = group_gl_obj.add_group(group)
-
         return HttpResponse(status)
 
 
@@ -180,4 +178,8 @@ def file(request):
 
 
 def log(request):
-    return render(request,'log.html')
+    if request.method == 'GET':
+        log_obj = Base_Class()
+        log = log_obj.log_read()
+
+        return render(request,'log.html',{'log':log})

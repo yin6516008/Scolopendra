@@ -5,7 +5,30 @@
 {% endblock %}
 
 {% block content %}
-    <p>log</p>
+    <div class="log-list">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>日期</th>
+                    <th>类型</th>
+                    <th>内容</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in log %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.date }}</td>
+                    <td>{{ i.type }}</td>
+                    <td>{{ i.log }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
 {% endblock %}
 
 {% block js %}

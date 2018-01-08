@@ -46,17 +46,26 @@
               <input name="service.stop" class="form-control action-arg_input hide" placeholder="请输入需要停止的服务名"/>
               <input name="service.status" class="form-control action-arg_input hide" placeholder="请输入查看状态的服务名"/>
               <input name="cmd.run" class="form-control action-arg_input hide" placeholder="请输入powershell命令"/>
-              <input name="cmd.run" class="form-control action-arg_input hide" value="shell='powershell'"disabled>
+              <input name="cmd.run" class="form-control action-arg_input hide" value="shell='powershell'" disabled/>
               <input name="cmd.script" class="form-control action-arg_input hide" value="salt://"/>
-              <input name="cmd.script" class="form-control action-arg_input hide" value="shell='powershell'"disabled>
+              <input name="cmd.script" class="form-control action-arg_input hide" value="shell='powershell'" disabled/>
               <input name="cp.get_file" class="form-control action-arg_input hide" value="salt://"/>
               <input name="cp.get_file" class="form-control action-arg_input hide" placeholder="请输入目标文件路径"/>
           </span>
 
           <div style="padding: 10px;display: inline-block">
-              <input id="exec" class="btn btn-default" type="submit" value="执行">
+              <button id="exec" class="btn btn-default" type="button" value="执行">执行</button>
           </div>
-          <div class="alert alert-danger action-hint hide" role="alert"></div>
+          <span>
+            <button id="status" type="button" class="btn btn-primary hide" data-toggle="modal" data-target=".status"></button>
+            <div class="modal fade status" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content show_status">
+                    <p id="status_info"></p>
+                </div>
+              </div>
+            </div>
+          </span>
     </div>
 
 {#展示执行后返回的数据table#}
@@ -76,6 +85,7 @@
 {% endblock %}
 
 {% block js %}
+    <script language="JavaScript" src="/static/js/index.js"></script>
     <script>
 //-----------------------------------------------------------------模块---------------------------------------------
 
@@ -108,6 +118,7 @@
         var module = $(this).val()
         $("#func").children().each(function(){
             if ($(this).attr('name') == module ){
+                console.log($(this).attr('name'));
                 $(this).removeClass('hide')
             }else{
                 $(this).addClass('hide')
@@ -135,6 +146,8 @@
 //通过view.action方法执行后返回数据，并处理数据，让其展示到表格
 //获取参数
         $("#exec").click(function(){
+            show_status('请勿刷新页面')
+
             var args = new Array()
             var hosts = $("#hosts").val()
             console.log(hosts)
@@ -147,10 +160,22 @@
                     args[args.length] = $(this).val()
                 }
             })
+            if ( module == "" ){
+                show_status('请选择模块')
+                return false
+            }else if ( hosts == ""){
+                show_status('请选择主机')
+                return false
+            }else if ( func == "" ){
+                show_status('请选择方法')
+                return false
+            }
+
             var params = JSON.stringify(args)
 //提交参数
             console.log(params)
             console.log(mudule_func)
+            $('#exec').attr("disabled",true)
             $.ajax({
                 type:'post',
                 url:'/action/',
@@ -160,6 +185,7 @@
 //获取返回数据，并处理
                 success:function(data){
                     show_exec_data(data)
+                    $('#exec').attr("disabled",false)
                 },
                 dataType:"json"
             })
