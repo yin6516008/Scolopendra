@@ -5,12 +5,12 @@ from Classes.Base_module import Base_Class
 from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex
 
-# from pymongo import MongoClient
-#
-# mongo_server = 'localhost'
-# mongo_port = 27017
-# client = MongoClient(mongo_server,mongo_port)
-# Scolopendra_db = client.Scolopendra_db
+from pymongo import MongoClient
+
+mongo_server = 'localhost'
+mongo_port = 27017
+client = MongoClient(mongo_server,mongo_port)
+Scolopendra_db = client.Scolopendra_db
 
 
 

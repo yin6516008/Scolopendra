@@ -39,7 +39,7 @@
                     {% for host in hosts %}
                         <tr name="{{ host }}">
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ host }}</td>
+                            <td><a href="/detail-{{ host }}/">{{ host }}</a></td>
                             <td><a class="host-table_action" action="del" hostname="{{ host }}">删除</a></td>
                         </tr>
                     {% endfor %}

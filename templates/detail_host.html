@@ -1,0 +1,60 @@
+{% extends "index.html" %}
+
+{% block css %}
+{% endblock %}
+
+{% block content %}
+    <div class="host-list">
+        <h3>{{ host_info.id }}主机详情</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>项</th>
+                    <th>信息</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>主机名</td>
+                    <td>{{ host_info.host }}</td>
+                </tr>
+                <tr>
+                    <td>ID</td>
+                    <td>{{ host_info.id }}</td>
+                </tr>
+                <tr>
+                    <td>操作系统</td>
+                    <td>{{ host_info.osfullname }}</td>
+                </tr>
+                <tr>
+                    <td>CPU</td>
+                    <td>{{ host_info.cpu_model }}</td>
+                </tr>
+                <tr>
+                    <td>CPU核心</td>
+                    <td>{{ host_info.num_cpus }}</td>
+                </tr>
+                <tr>
+                    <td>CPU架构</td>
+                    <td>{{ host_info.cpuarch }}</td>
+                </tr>
+                <tr>
+                    <td>内存内存</td>
+                    <td>{{ host_info.mem_total }}</td>
+                </tr>
+                {% for k,v in host_info.ip4_interfaces.items %}
+                <tr>
+                    <td>网卡{{ forloop.counter }}</td>
+                    <td>{{ k }} : {{ v }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td>错误</td>
+                    <td>{{ host_info.error }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock %}

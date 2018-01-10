@@ -1,0 +1,44 @@
+{% extends "index.html" %}
+
+{% block css %}
+{% endblock %}
+
+{% block content %}
+    <div class="group-list">
+        <h3>{{ group_info.group_name }}组详情</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>项</th>
+                    <th>信息</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>组名</td>
+                    <td>{{ group_info.group_name }}</td>
+                </tr>
+                <tr>
+                    <td>描述</td>
+                    <td>{{ group_info.group_description }}</td>
+                </tr>
+                <tr>
+                    <td>主机数量</td>
+                    <td>{{ group_info.group_hosts_number }}</td>
+                </tr>
+
+                <tr>
+                    <td>主机</td>
+
+                    <td>
+                        {% for host in group_info.group_hosts %}
+                            <li>{{ host }}</li>
+                        {% endfor %}
+                    </td>
+
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

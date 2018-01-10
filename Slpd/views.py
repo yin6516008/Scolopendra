@@ -33,6 +33,7 @@ def login(request):
         #用户名密码验证，并session赋值
         user_gl_obj = user_gl()
         result = user_gl_obj.user_auth(user,password,request)
+        print(result)
         if result:
             request.session['user'] = user
             return redirect('/action/')
@@ -93,6 +94,15 @@ def host(request):
             result = host_gl_obj.accept_host(hostname)
             return HttpResponse(result)
 
+def detail_host(request,host):
+    salt_api_obj = salt_api()
+    if request.method == 'GET':
+        host_info = salt_api_obj.Scolopendra_db.host_info.find_one({'id':host})
+        if host_info == None:
+            host_info = salt_api_obj.grains(host)
+        return render(request,'detail_host.html',{'host_info':host_info})
+
+
 
 def group(request):
     '''
@@ -107,19 +117,36 @@ def group(request):
     elif request.method == 'POST':
         group_name = request.POST.get('del_group')
         result = group_gl_obj.del_group(group_name)
-        # log.log_write(log_content="删除组%s" % group_name,type='gourp')
         return HttpResponse(result)
 
-def add_group(request):
+def detail_group(request,group):
+    group_gl_obj = group_gl()
+    if request.method == 'GET':
+        group_info = group_gl_obj.Scolopendra_db.group.find_one({'group_name':group})
+        return render(request,"detail_group.html",{'group_info':group_info})
+
+
+def edit_group(request,group=None):
     '''
     新建组的方法
     :param request:
     :return:
     '''
     host_gl_obj = host_gl()
+    group_gl_obj = group_gl()
     if request.method == 'GET':
-        host_list = host_gl_obj.show_host()
-        return render(request,'add_group.html',{'host_list':host_list})
+        if group == None:
+            host_list = host_gl_obj.show_host()
+            return render(request,'edit_group.html',{'host_list':host_list})
+        else:
+            host_list = host_gl_obj.show_host()
+            group_obj = group_gl_obj.Scolopendra_db.group.find_one({'group_name':group})
+            group_info = {
+                'group_name':group_obj['group_name'],
+                'group_description':group_obj['group_description'],
+                'group_hosts':group_obj['group_hosts']
+            }
+            return render(request,'edit_group.html',{'host_list':host_list,'group_info':json.dumps(group_info)})
     elif request.method == 'POST':
         action = request.POST.get('action')
         group_name = request.POST.get('group_name')
@@ -134,8 +161,11 @@ def add_group(request):
             'group_description':group_description,
             'group_hosts_number':group_hosts_number
         }
-        group_gl_obj = group_gl()
-        status = group_gl_obj.add_group(group)
+        if hasattr(group_gl_obj,action):
+            func = getattr(group_gl_obj,action)
+            status = func(group)
+        else:
+            status = 'Function Exist'
         return HttpResponse(status)
 
 
@@ -177,9 +207,13 @@ def file(request):
             return HttpResponse('fff')
 
 
-def log(request):
+def log(request,type=None,arg=None):
     if request.method == 'GET':
-        log_obj = Base_Class()
-        log = log_obj.log_read()
-
-        return render(request,'log.html',{'log':log})
+        if type == None:
+            log_obj = Base_Class()
+            log = log_obj.log_read()
+            return render(request,'log.html',{'log':log})
+        else:
+            log_obj = Base_Class()
+            log = log_obj.log_read(type=type,arg=arg)
+            return render(request,'log.html',{'log':log})

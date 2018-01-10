@@ -6,7 +6,7 @@
 {% block content %}
 
     <div class="group-list">
-    <a class="btn btn-default" href="/add_group" role="button">新建组</a>
+    <a class="btn btn-default" href="/edit_group/" role="button">新建组</a>
         <table class="table">
           <thead>
             <tr>
@@ -21,11 +21,11 @@
             {% for group in all_group %}
                 <tr group_name="{{ group.group_name }}">
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ group.group_name }}</td>
+                    <td><a href="/detail_group-{{ group.group_name }}/">{{ group.group_name }}</a></td>
                     <td>{{ group.group_hosts_number }}</td>
                     <td>{{ group.group_description }}</td>
                     <td>
-                        <a class="group-action_edit" group_name="{{ group.group_name }}" >编辑</a>
+                        <a class="group-action_edit" href="/edit_group-{{ group.group_name }}/" group_name="{{ group.group_name }}" >编辑</a>
                         <a class="group-action_del"  group_name="{{ group.group_name }}" >删除</a>
                     </td>
                 </tr>
@@ -52,5 +52,6 @@
 
         })
     })
+
     </script>
 {% endblock %}

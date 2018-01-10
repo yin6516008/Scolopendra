@@ -25,8 +25,12 @@ urlpatterns = [
     url(r'^action/', views.action),
     url(r'^file/', views.file),
     url(r'^group/', views.group),
-    url(r'^add_group/', views.add_group),
+    url(r'^detail_group-(.*)/', views.detail_group),
+    url(r'^edit_group/', views.edit_group),
+    url(r'^edit_group-(.*)/', views.edit_group),
     url(r'^host/', views.host),
+    url(r'^detail-(.*)/', views.detail_host),
     url(r'^log/', views.log),
-
+    url(r'^log-(date)-(.*)/', views.log),
+    url(r'^log-(type)-(.*)/', views.log),
 ]

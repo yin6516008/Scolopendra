@@ -54,3 +54,9 @@ class group_gl(Base_Class):
         '''
         hosts = self.Scolopendra_db.group.find_one({"group_name":group_name})
         return hosts['group_hosts']
+
+    def update_group(self,group):
+        group_name = group['group_name']
+        self.Scolopendra_db.group.update({'group_name':group_name},group)
+        self.log_write(log_content="修改组%s" % group_name,type='group')
+        return 'OK'
