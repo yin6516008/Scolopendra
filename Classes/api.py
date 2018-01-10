@@ -8,7 +8,7 @@ import re
 from salt import key,config,client
 from Classes.Base_module import Base_Class
 from pymongo.errors import InvalidDocument
-
+from Classes.groupManage import group_gl
 
 master_opts = config.client_config('/etc/salt/master')
 salt_root_path = master_opts['file_roots']['base'][0]
@@ -35,6 +35,7 @@ class salt_api(Base_Class):
         :param args:
         :return:
         '''
+        group_gl_obj = group_gl()
         if group_name == '*':
             hosts = group_name
         else:
